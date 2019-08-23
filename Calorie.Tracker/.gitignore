@@ -1,3 +1,6 @@
+.vs
+.vscode
+
 # globs
 Makefile.in
 *.userprefs
