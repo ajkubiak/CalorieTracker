@@ -13,13 +13,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Controllers\ValuesController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Database\" />
+    <Folder Include="Database\EfContext\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Lib\Lib.csproj" />
-    <ProjectReference Include="..\Configuration\Configuration.mdproj" />
   </ItemGroup>
 </Project>

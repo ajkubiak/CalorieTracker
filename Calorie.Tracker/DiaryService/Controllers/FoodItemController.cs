@@ -1,31 +1,38 @@
-﻿using Lib.Utils;
+﻿using System.Linq;
+using DiaryService.Database.EfContext;
+using Lib.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiaryService.Controllers
 {
     /**
      * <summary>
-     *  Controls meals.
+     *  Controls food items.
      * </summary>
      */
-    [Route("api/meals")]
-	public class MealsController : Controller
+    [Route("api/fooditems")]
+	public class FoodItemController : Controller
 	{
         private readonly ISettingsUtils _settingsUtils;
-
-        public MealsController(ISettingsUtils settingsUtils)
+        public FoodItemController(ISettingsUtils settingsUtils)
         {
             _settingsUtils = settingsUtils;
         }
 
         /**
-         * <summary>Retrieves meal objects</summary>
+         * <summary>Retrieves food item objects</summary>
          */
         [HttpGet]
 		public IActionResult Get()
 		{
-			return Ok();
-		}
+            using (var context = new FoodItemContext(
+                    _settingsUtils.BuildOptions<FoodItemContext>()))
+            {
+                var foods = context.FoodItems.ToList();
+                return Ok(foods);
+            }
+
+        }
 
 		/**
          * <summary>Retrieves meal objects</summary>
