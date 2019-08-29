@@ -29,4 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Lib\Lib.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="appsettings.DEVELOP.json" />
+  </ItemGroup>
 </Project>

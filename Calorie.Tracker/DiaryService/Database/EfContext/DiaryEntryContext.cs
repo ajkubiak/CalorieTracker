@@ -17,17 +17,4 @@ namespace DiaryService.Database.EfContext
             // empty, needed for creating migrations
         }
     }
-
-    /**
-     * <summary>Context factory for building migrations at design time. This class
-     * must exist to supply the type to the context factory</summary>
-     */
-    public class DiaryEntryContextFactory : BaseIDesignTimeDbContextFactory<DiaryEntryContext>
-    {
-        public DiaryEntryContextFactory(ISettingsUtils settingsUtils)
-            : base(settingsUtils)
-        {
-
-        }
-    }
 }

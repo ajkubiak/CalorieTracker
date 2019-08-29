@@ -1,8 +1,10 @@
 ﻿using System;
+using DiaryService.Database;
 using Lib.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -24,12 +26,13 @@ namespace DiaryService
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             // Singletons
             services.AddSingleton<ISettingsUtils, SettingsUtils>();
+            services.AddSingleton<IDatabaseApi, DatabaseApi>();
         }
 
-        public void ConfigureDesignTimeServices(IServiceCollection services)
-        {
-            services.AddSingleton<ISettingsUtils, SettingsUtils>();
-        }
+        //public void ConfigureDesignTimeServices(IServiceCollection services)
+        //{
+        //    services.AddSingleton<ISettingsUtils, SettingsUtils>();
+        //}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ISettingsUtils settingsUtils)
@@ -60,4 +63,6 @@ namespace DiaryService
             settingsUtils.Initialize(myEnv);
         }
     }
+
+    
 }

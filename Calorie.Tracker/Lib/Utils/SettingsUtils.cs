@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace Lib.Utils
@@ -8,12 +6,12 @@ namespace Lib.Utils
     public enum RuntimeEnvironment
     {
         UNKNOWN,
-        DEVELOP,
+        Development,
         INTEGRATION,
         PRODUCTION
     }
     /**
-     * <summary>The Settings utilities Singleton</summary>
+     * <summary>The Settings utilityies Singleton</summary>
      */
     public interface ISettingsUtils
     {
@@ -22,38 +20,23 @@ namespace Lib.Utils
          */
         void Initialize(RuntimeEnvironment env);
         string GetDbConnectionString();
-        //DbContextOptions<T> BuildOptions<T>() where T : Microsoft.EntityFrameworkCore.DbContext;
     }
 
     public class SettingsUtils : ISettingsUtils
     {
-        //private readonly Log _logger;
-        private readonly string _hostingEnvironment;
+        public static readonly string dbstring;
         private readonly IConfiguration _config;
         private RuntimeEnvironment env;
 
         public SettingsUtils(IConfiguration config)
         {
-            //_logger = logger;
-            //_hostingEnvironment = env.EnvironmentName;
             _config = config;
 
         }
 
         public void Initialize(RuntimeEnvironment env)
         {
-            //env = RuntimeEnvironment.UNKNOWN;
-            //try
-            //{
-            //    Enum.TryParse<RuntimeEnvironment>(_hostingEnvironment, out env);
-            //}
-            //catch (ArgumentException ex)
-            //{
-            //    _logger.LogError($"Could not parse environment from config. Setting as {RuntimeEnvironment.UNKNOWN}", ex);
-            //    throw ex;
-            //}
-            //_logger.LogDebug("Environment is set to: {env}", env);
-            Log.Error("Environment is set to {env}", env);
+            Log.Debug("Environment is set to {env}", env);
             this.env = env;
         }
 
@@ -61,12 +44,14 @@ namespace Lib.Utils
          * <summary>
          *  Retrieve database connection settings. Must call the <see cref="Initialize(RuntimeEnvironment)"/> method
          *  before calling this function.
+         *
+         *  NOTE: This logic must be match the design time database connection string
          * </summary>
+         * 
          * <returns>Postgresql connection string. Null if no environment is defined.</returns>
          */
         public string GetDbConnectionString()
         {
-            //_logger.LogDebug("retrieving env settings for {env}", env);
             string host = null;
             string databaseName = null;
             string username = null;
@@ -74,9 +59,9 @@ namespace Lib.Utils
 
             switch (env)
             {
-                case RuntimeEnvironment.DEVELOP:
-                    host = _config.GetValue<string>("DB_NAME");
-                    databaseName = _config.GetValue<string>("DB_HOST");
+                case RuntimeEnvironment.Development:
+                    host = _config.GetValue<string>("DB_HOST");
+                    databaseName = _config.GetValue<string>("DB_NAME");
                     username = _config.GetValue<string>("DB_USER");
                     password = _config.GetValue<string>("DB_PASS");
                     Log.Debug($"Host={host};Database={databaseName};Username={username};");
