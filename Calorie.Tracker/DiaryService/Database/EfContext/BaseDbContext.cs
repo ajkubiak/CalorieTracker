@@ -17,26 +17,19 @@ namespace DiaryService.Database.EfContext
             _settingsUtils = settingsUtils;
         }
 
-        public T CreateDbContext(string[] args)
+        public T CreateDbContext<T>(string[] args)
         {
-            //string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            //IConfiguration config = new ConfigurationBuilder()
-            //        .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../EfDesignDemo.Web"))
-            //        //.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            //        .AddJsonFile($"appsettings.{environment}.json", optional: true)
-            //        .AddEnvironmentVariables()
-            //        .Build();
             var optionsBuilder = new DbContextOptionsBuilder<T>();
             optionsBuilder.UseNpgsql(_settingsUtils.GetDbConnectionString());
             return (T)Activator.CreateInstance(typeof(T), optionsBuilder.Options);
         }
 
-        public DbContextOptions<T> BuildOptions<T>() where T : DbContext
-        {
-            return new DbContextOptionsBuilder<T>()
-                .UseLazyLoadingProxies()
-                .UseNpgsql(GetDbConnectionString())
-                .Options;
-        }
+        //public DbContextOptions<T> BuildOptions<T>() where T : DbContext
+        //{
+        //    return new DbContextOptionsBuilder<T>()
+        //        .UseLazyLoadingProxies()
+        //        .UseNpgsql(_settingsUtils.GetDbConnectionString())
+        //        .Options;
+        //}
     }
 }

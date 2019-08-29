@@ -1,16 +1,16 @@
-﻿using Lib.Utils;
+﻿using System;
+using Lib.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace DiaryService
 {
     public class Startup
     {
-        //private readonly string CorsConfig = "_corsConfig";
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -45,8 +45,19 @@ namespace DiaryService
             }
             app.UseHttpsRedirection();
             app.UseMvc();
-            settingsUtils.Initialize();
-            //app.UseCors(CorsConfig);
+
+            // Configure utils for this environment
+            RuntimeEnvironment myEnv = RuntimeEnvironment.UNKNOWN;
+            try
+            {
+                Enum.TryParse<RuntimeEnvironment>(env.EnvironmentName, out myEnv);
+            }
+            catch (ArgumentException ex)
+            {
+                Log.Error($"Could not parse environment from config. Setting as {RuntimeEnvironment.UNKNOWN}", ex);
+                throw ex;
+            }
+            settingsUtils.Initialize(myEnv);
         }
     }
 }

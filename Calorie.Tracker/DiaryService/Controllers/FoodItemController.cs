@@ -2,6 +2,7 @@
 using DiaryService.Database.EfContext;
 using Lib.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace DiaryService.Controllers
 {
@@ -31,7 +32,7 @@ namespace DiaryService.Controllers
                 var foods = context.FoodItems.ToList();
                 return Ok(foods);
             }
-
+            //return Ok(_settingsUtils.GetDbConnectionString());
         }
 
 		/**
