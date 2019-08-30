@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiaryService", "DiaryServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{3D9FE85D-5519-41DA-BFC2-6C8D1F83B402}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "AuthService\AuthService.csproj", "{1D94F142-8D74-4485-AE1E-224D7C63C45D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedConfig", "SharedConfig\SharedConfig.shproj", "{64136CD6-D66A-41AB-91E5-4DE7EB832E26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,11 @@ Global
 		{3D9FE85D-5519-41DA-BFC2-6C8D1F83B402}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D9FE85D-5519-41DA-BFC2-6C8D1F83B402}.Default|Any CPU.ActiveCfg = Debug|Any CPU
 		{3D9FE85D-5519-41DA-BFC2-6C8D1F83B402}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{1D94F142-8D74-4485-AE1E-224D7C63C45D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D94F142-8D74-4485-AE1E-224D7C63C45D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D94F142-8D74-4485-AE1E-224D7C63C45D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D94F142-8D74-4485-AE1E-224D7C63C45D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D94F142-8D74-4485-AE1E-224D7C63C45D}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D94F142-8D74-4485-AE1E-224D7C63C45D}.Default|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -12,9 +12,9 @@ namespace Lib.Models
      */
     public class FoodItem : BaseModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public long Id { get; set; }
 
         /**
          * <summary>

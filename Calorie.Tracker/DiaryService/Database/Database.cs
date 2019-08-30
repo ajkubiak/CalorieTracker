@@ -51,7 +51,7 @@ namespace DiaryService.Database
                 }
 
                 FoodItem food = null;
-                food = context.FoodItems.First(x => x.Id == id);
+                //food = context.FoodItems.First(x => x.Id == id);
                 context.FoodItems.Remove(food);
             }
         }

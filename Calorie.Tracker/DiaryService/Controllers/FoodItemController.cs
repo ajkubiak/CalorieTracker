@@ -61,7 +61,7 @@ namespace DiaryService.Controllers
             {
                 var food = db.CreateFoodItem(foodItem);
                 Log.Debug("Created food: ", food);
-                return Created(new Uri($"{Request.Path}/{food.Id}"), food);
+                return Created(new Uri($"{Request.Scheme}://{Request.Path}/{food.Id}"), food);
             }
             catch (Exception e)
             {
