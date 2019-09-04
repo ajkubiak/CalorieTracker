@@ -14,6 +14,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Lib.Models;
+using Lib.Models.Database.Auth;
+using Lib.Utils;
+using Serilog;
 
 namespace AuthService
 {
@@ -31,6 +34,10 @@ namespace AuthService
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            // Singletons
+            services.AddSingleton<ISettingsUtils, SettingsUtils>();
+            services.AddSingleton<IAuthDb, AuthDb>();
+
             // Use authentication
             services.AddAuthentication(options =>
             {
@@ -46,7 +53,7 @@ namespace AuthService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ISettingsUtils settingsUtils)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +64,19 @@ namespace AuthService
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            // Configure utils for this environment
+            RuntimeEnvironment myEnv = RuntimeEnvironment.UNKNOWN;
+            try
+            {
+                Enum.TryParse<RuntimeEnvironment>(env.EnvironmentName, out myEnv);
+            }
+            catch (ArgumentException ex)
+            {
+                Log.Error($"Could not parse environment from config. Setting as {RuntimeEnvironment.UNKNOWN}", ex);
+                throw ex;
+            }
+            settingsUtils.Initialize(myEnv);
 
             app.UseHttpsRedirection();
             app.UseMvc();

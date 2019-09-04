@@ -1,6 +1,6 @@
 ﻿using System;
 using DiaryService.Database;
-using Lib.Models;
+using Lib.Models.Diary;
 using Lib.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

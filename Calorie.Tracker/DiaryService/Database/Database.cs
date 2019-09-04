@@ -3,28 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using DiaryService.Database.EfContext;
 using Lib.Models;
+using Lib.Models.Database;
 using Lib.Utils;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DiaryService.Database
 {
-    public class DatabaseApi : IDatabaseApi
+    public class DatabaseApi : BaseDatabaseApi, IDatabaseApi
     {
-        private readonly ISettingsUtils settingsUtils;
+        
 
         public DatabaseApi(ISettingsUtils settingsUtils)
+            : base(settingsUtils)
         {
-            this.settingsUtils = settingsUtils;
+            // empty
         }
-
-        public DbContextOptions<T> BuildOptions<T>() where T : DbContext
-        {
-            return new DbContextOptionsBuilder<T>()
-                .UseLazyLoadingProxies()
-                .UseNpgsql(settingsUtils.GetDbConnectionString())
-                .Options;
-        }
+        
 
         public FoodItem CreateFoodItem(FoodItem foodItem)
         {
@@ -36,16 +31,16 @@ namespace DiaryService.Database
         }
 
         /**
-         * <summary>Delete a  by id</summary>
+         * <summary>Delete a <see cref="FoodItem"/> by id</summary>
          * <exception cref="InvalidOperationException">A food item with that id does not exist</exception>
          */
-        public void DeleteFoodItem(long id)
+        public void DeleteFoodItem(Guid id)
         {
             using (var context = new FoodItemContext(
                 BuildOptions<FoodItemContext>()))
             {
                 // data validation
-                if (id == 0)
+                if (id == Guid.Empty)
                 {
                     throw new ArgumentException("There was no id provided to this method");
                 }
