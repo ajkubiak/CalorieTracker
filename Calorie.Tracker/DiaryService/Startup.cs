@@ -25,7 +25,7 @@ namespace DiaryService
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             // Singletons
-            services.AddSingleton<ISettingsUtils, SettingsUtils>();
+            services.AddSingleton<ISettingsUtils, AuthUtils>();
             services.AddSingleton<IDatabaseApi, DatabaseApi>();
         }
 

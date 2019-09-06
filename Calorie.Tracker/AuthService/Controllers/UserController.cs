@@ -14,11 +14,15 @@ namespace AuthService.Controllers
     [Route("[controller]")]
     public class UserController : BaseController
     {
-        public UserController(ISettingsUtils settingsUtils, IAuthDb db)
+        private readonly IAuthUtils authUtils;
+
+        public UserController(IAuthUtils authUtils, ISettingsUtils settingsUtils, IAuthDb db)
             : base(settingsUtils, db)
         {
-            // empty
+            this.authUtils = authUtils;
         }
+
+
 
         [AllowAnonymous]
         [Consumes("application/json")]
@@ -30,7 +34,16 @@ namespace AuthService.Controllers
             {
                 bool isAuthenticated = db.Authenticate(userLogin);
                 Log.Debug("isAuthenticated: {username}: {auth}", userLogin.Username, isAuthenticated);
-                return Ok(isAuthenticated);
+                if (isAuthenticated)
+                {
+                    var user = db.GetUser(userLogin.Username);
+                    if (user == null)
+                    {
+                        return new NotFoundResult();
+                    }
+                    return Ok(authUtils.GenerateJwtToken(user));
+                }
+                return new StatusCodeResult(StatusCodes.Status401Unauthorized);
             }
             catch (Exception e)
             {

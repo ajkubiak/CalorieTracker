@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
+using Lib.Models.Database.Auth;
+using Lib.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Lib.Models;
-using Lib.Models.Database.Auth;
-using Lib.Utils;
 using Serilog;
 
 namespace AuthService
@@ -34,11 +27,21 @@ namespace AuthService
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            // Singletons
+            /**
+             * Singletons
+             */
             services.AddSingleton<ISettingsUtils, SettingsUtils>();
+            services.AddSingleton<IAuthUtils, AuthUtils>();
             services.AddSingleton<IAuthDb, AuthDb>();
 
-            // Use authentication
+            /**
+             * Use JWT authorization
+             */
+             // get config
+            //services.Configure<TokenConfig>(Configuration.GetSection("tokenConfig"));
+            TokenConfig tokenConfig = Configuration.GetSection("tokenConfig").Get<TokenConfig>();
+
+            // apply config
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -46,9 +49,20 @@ namespace AuthService
 
             }).AddJwtBearer(options =>
             {
-                options.Authority = Configuration.GetSection("authentication").GetValue<string>("authority");
+                //options.Authority = Configuration.GetSection("authentication").GetValue<string>("authority");
+                //options.RequireHttpsMetadata = false;
+                //options.Audience = Configuration.GetSection("authentication").GetValue<string>("audience");
+
                 options.RequireHttpsMetadata = false;
-                options.Audience = Configuration.GetSection("authentication").GetValue<string>("audience");
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+                        Configuration.GetSection("tokenConfig").GetValue<string>("secret"))),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
             });
         }
 
