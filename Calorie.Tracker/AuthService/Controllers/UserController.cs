@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Claims;
 using Lib.Models.Auth;
 using Lib.Models.Database.Auth;
 using Lib.Utils;
@@ -16,13 +18,28 @@ namespace AuthService.Controllers
     {
         private readonly IAuthUtils authUtils;
 
-        public UserController(IAuthUtils authUtils, ISettingsUtils settingsUtils, IAuthDb db)
+        public UserController(ISettingsUtils settingsUtils, IAuthDb db)
             : base(settingsUtils, db)
         {
-            this.authUtils = authUtils;
+            
         }
 
-
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult CreateUser([FromBody] UserLogin userLogin)
+        {
+            Log.Debug("Creating user: {username}", userLogin.Username);
+            try
+            {
+                db.CreateUser(userLogin);
+                return new StatusCodeResult(StatusCodes.Status201Created);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception creating user", e);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
 
         [AllowAnonymous]
         [Consumes("application/json")]
@@ -48,6 +65,22 @@ namespace AuthService.Controllers
             catch (Exception e)
             {
                 Log.Error("Exception retrieving food items", e);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetUsers()
+        {
+            Log.Debug("Getting users");
+            try
+            {
+                SetRequestUserId(HttpContext);
+                db.GetUser("swag");
+                return Ok();
+            } catch (Exception e)
+            {
+                Log.Error("Exception while getting users", e);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

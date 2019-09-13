@@ -9,6 +9,8 @@ namespace Lib.Models.Database.Auth
 {
     public class AuthDb : BaseDatabaseApi, IAuthDb
     {
+        public string UserId { get; set; }
+
         public AuthDb(ISettingsUtils settingsUtils)
             : base(settingsUtils)
         {
@@ -29,11 +31,13 @@ namespace Lib.Models.Database.Auth
                 Log.Debug("Authenticating: {user}", userLogin.Username);
                 try
                 {
-                    var login = context.UserLogins
+                    // Hash password
+
+                    // Check creds
+                    return context.UserLogins
                         .SingleOrDefault(creds =>
                             creds.Username == userLogin.Username
-                            && creds.Password == userLogin.Password);
-                    return login != null;
+                            && creds.Password == userLogin.Password) != null;
                 } catch(Exception e)
                 {
                     Log.Debug("User not authenticated", e);
@@ -48,8 +52,18 @@ namespace Lib.Models.Database.Auth
             using (var context = new AuthDbContext(
                 BuildOptions<AuthDbContext>()))
             {
-                var newUser = context.UserLogins.Add(userLogin);
-                Log.Debug("New user: {user}", newUser.Entity.);
+                // Hash password
+
+                // Create credentails for authentication
+                context.UserLogins.Add(userLogin);
+                Log.Debug("Created user login");
+
+                // Create User
+                context.Users.Add(new User(userLogin.Username));
+                Log.Debug("Created new user");
+                // Commit changes
+                var rowsAffected = context.SaveChanges();
+                Log.Debug("Finished setting up new user");
             }
         }
 
@@ -59,8 +73,12 @@ namespace Lib.Models.Database.Auth
             using (var context = new AuthDbContext(
                 BuildOptions<AuthDbContext>()))
             {
+                if (UserId == null)
+                    throw new ArgumentNullException("User id must be set. You may need to call SetRequestUserId");
+
                 try
                 {
+                    Log.Debug("!!!!!!!!1 User id is : {id}", UserId);
                     var foundUser = context.Users
                         .SingleOrDefault(userObj => userObj.Username == username);
                     Log.Debug("Found user: {username}", foundUser.Username);
@@ -74,7 +92,7 @@ namespace Lib.Models.Database.Auth
             }
         }
 
-        public List<User> GetUser(List<string> userNames)
+        public List<User> GetUsers(List<string> userNames)
         {
             Log.Debug("Retrieving {length} users", userNames.Count);
             using (var context = new AuthDbContext(

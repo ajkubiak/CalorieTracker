@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Lib.Models.Auth;
 using Lib.Models.Database.Auth;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,12 +33,12 @@ namespace AuthService
              */
             services.AddSingleton<ISettingsUtils, SettingsUtils>();
             services.AddSingleton<IAuthUtils, AuthUtils>();
-            services.AddSingleton<IAuthDb, AuthDb>();
+            services.AddScoped<IAuthDb, AuthDb>();
 
             /**
              * Use JWT authorization
              */
-             // get config
+            // get config
             //services.Configure<TokenConfig>(Configuration.GetSection("tokenConfig"));
             TokenConfig tokenConfig = Configuration.GetSection("tokenConfig").Get<TokenConfig>();
 
@@ -93,8 +94,9 @@ namespace AuthService
             settingsUtils.Initialize(myEnv);
 
             app.UseHttpsRedirection();
-            app.UseMvc();
             app.UseAuthentication();
+            //app.UseAuthDbMiddleware();
+            app.UseMvc();
         }
     }
 }

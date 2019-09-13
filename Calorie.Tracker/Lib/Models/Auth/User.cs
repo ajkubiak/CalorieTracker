@@ -7,12 +7,16 @@ namespace Lib.Models.Auth
     {
         [Required]
         public string Username { get; set; }
-        [Required]
-        public string Password { get; set; }
-        public string Token { get; set; }
+
+
         public User()
         {
             
+        }
+
+        public User(string username)
+        {
+            Username = username;
         }
     }
 }
