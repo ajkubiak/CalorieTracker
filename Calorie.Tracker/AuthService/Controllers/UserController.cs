@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
-using System.Security.Claims;
 using Lib.Models.Auth;
+using Lib.Models.Controllers;
 using Lib.Models.Database.Auth;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -17,11 +16,13 @@ namespace AuthService.Controllers
     public class UserController : BaseController
     {
         private readonly IAuthUtils authUtils;
+        private readonly IAuthDb db;
 
-        public UserController(ISettingsUtils settingsUtils, IAuthDb db)
-            : base(settingsUtils, db)
+        public UserController(ISettingsUtils settingsUtils, IAuthDb db, IAuthUtils authUtils)
+            : base(settingsUtils)
         {
-            
+            this.authUtils = authUtils;
+            this.db = db;
         }
 
         [AllowAnonymous]
@@ -31,12 +32,16 @@ namespace AuthService.Controllers
             Log.Debug("Creating user: {username}", userLogin.Username);
             try
             {
+                var (isValid, errorMessage) = authUtils
+                        .ValidatePasswordMeetsRequirements(userLogin.Password);
+                if (!isValid)
+                    return BadRequest($"Password does not meet requirements: {errorMessage}");
                 db.CreateUser(userLogin);
                 return new StatusCodeResult(StatusCodes.Status201Created);
             }
             catch (Exception e)
             {
-                Log.Error("Exception creating user", e);
+                Log.Error(e, "Exception creating user");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -64,7 +69,7 @@ namespace AuthService.Controllers
             }
             catch (Exception e)
             {
-                Log.Error("Exception retrieving food items", e);
+                Log.Error(e, "Exception retrieving food items");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -75,12 +80,11 @@ namespace AuthService.Controllers
             Log.Debug("Getting users");
             try
             {
-                SetRequestUserId(HttpContext);
                 db.GetUser("swag");
                 return Ok();
             } catch (Exception e)
             {
-                Log.Error("Exception while getting users", e);
+                Log.Error(e, "Exception while getting users");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

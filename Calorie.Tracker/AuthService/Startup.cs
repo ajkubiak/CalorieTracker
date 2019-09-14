@@ -2,6 +2,7 @@
 using System.Text;
 using Lib.Models.Auth;
 using Lib.Models.Database.Auth;
+using Lib.Models.RequestFilter;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +27,9 @@ namespace AuthService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddHttpContextAccessor();
 
             /**
              * Singletons
@@ -39,7 +42,6 @@ namespace AuthService
              * Use JWT authorization
              */
             // get config
-            //services.Configure<TokenConfig>(Configuration.GetSection("tokenConfig"));
             TokenConfig tokenConfig = Configuration.GetSection("tokenConfig").Get<TokenConfig>();
 
             // apply config
@@ -50,17 +52,13 @@ namespace AuthService
 
             }).AddJwtBearer(options =>
             {
-                //options.Authority = Configuration.GetSection("authentication").GetValue<string>("authority");
-                //options.RequireHttpsMetadata = false;
-                //options.Audience = Configuration.GetSection("authentication").GetValue<string>("audience");
-
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-                        Configuration.GetSection("tokenConfig").GetValue<string>("secret"))),
+                            Configuration.GetSection("tokenConfig").GetValue<string>("secret"))),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
@@ -95,7 +93,6 @@ namespace AuthService
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
-            //app.UseAuthDbMiddleware();
             app.UseMvc();
         }
     }

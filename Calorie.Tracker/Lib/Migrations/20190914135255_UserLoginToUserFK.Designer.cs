@@ -3,15 +3,17 @@ using System;
 using Lib.Models.Database.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Lib.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    partial class AuthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190914135255_UserLoginToUserFK")]
+    partial class UserLoginToUserFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,13 +23,16 @@ namespace Lib.Migrations
 
             modelBuilder.Entity("Lib.Models.Auth.User", b =>
                 {
-                    b.Property<string>("Username")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Email");
 
-                    b.HasKey("Username");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
@@ -40,13 +45,15 @@ namespace Lib.Migrations
                     b.Property<string>("Password")
                         .IsRequired();
 
+                    b.Property<Guid?>("UserId");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(20);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserLogins");
                 });
@@ -55,8 +62,7 @@ namespace Lib.Migrations
                 {
                     b.HasOne("Lib.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("Username")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

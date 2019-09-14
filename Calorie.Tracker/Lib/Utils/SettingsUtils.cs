@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Lib.Models.Auth;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace Lib.Utils
@@ -20,17 +21,18 @@ namespace Lib.Utils
          */
         void Initialize(RuntimeEnvironment env);
         string GetDbConnectionString();
+        PasswordHashConfig GetPasswordHashConfig();
     }
 
     public class SettingsUtils : ISettingsUtils
     {
         public static readonly string dbstring;
-        private readonly IConfiguration _config;
+        private readonly IConfiguration config;
         private RuntimeEnvironment env;
 
         public SettingsUtils(IConfiguration config)
         {
-            _config = config;
+            this.config = config;
 
         }
 
@@ -60,10 +62,10 @@ namespace Lib.Utils
             switch (env)
             {
                 case RuntimeEnvironment.Development:
-                    host = _config.GetValue<string>("DB_HOST");
-                    databaseName = _config.GetValue<string>("DB_NAME");
-                    username = _config.GetValue<string>("DB_USER");
-                    password = _config.GetValue<string>("DB_PASS");
+                    host = config.GetValue<string>("DB_HOST");
+                    databaseName = config.GetValue<string>("DB_NAME");
+                    username = config.GetValue<string>("DB_USER");
+                    password = config.GetValue<string>("DB_PASS");
                     Log.Debug($"Host={host};Database={databaseName};Username={username};");
                     return $"Host={host};Database={databaseName};Username={username};Password={password}";
                 case RuntimeEnvironment.INTEGRATION:
@@ -77,6 +79,15 @@ namespace Lib.Utils
             }
 
             return $"Host={host};Database={databaseName};Username={username};Password={password}";
+        }
+
+        /**
+         * <summary>Get the password hashing configuration.</summary>
+         * <returns>The configuration. Null if it could not parse the information</returns>
+         */
+        public PasswordHashConfig GetPasswordHashConfig()
+        {
+            return config.GetSection("PasswordHashConfig").Get<PasswordHashConfig>();
         }
     }
 }

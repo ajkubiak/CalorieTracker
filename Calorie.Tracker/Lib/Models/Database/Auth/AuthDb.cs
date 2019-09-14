@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using Lib.Models.Auth;
 using Lib.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Serilog;
 
 namespace Lib.Models.Database.Auth
 {
     public class AuthDb : BaseDatabaseApi, IAuthDb
     {
-        public string UserId { get; set; }
+        private readonly IAuthUtils authUtils;
 
-        public AuthDb(ISettingsUtils settingsUtils)
-            : base(settingsUtils)
+        public AuthDb(IHttpContextAccessor httpContextAccessor, ISettingsUtils settingsUtils, IAuthUtils authUtils)
+            : base(httpContextAccessor, settingsUtils)
         {
+            this.authUtils = authUtils;
         }
 
         /**
@@ -31,16 +35,33 @@ namespace Lib.Models.Database.Auth
                 Log.Debug("Authenticating: {user}", userLogin.Username);
                 try
                 {
-                    // Hash password
+                    // Find user
+                    var foundUserLogin = context.UserLogins
+                        .SingleOrDefault(creds =>
+                            creds.Username == userLogin.Username);
+                    if (foundUserLogin == null)
+                    {
+                        Log.Debug("User not found");
+                        return false;
+                    }
 
                     // Check creds
-                    return context.UserLogins
-                        .SingleOrDefault(creds =>
-                            creds.Username == userLogin.Username
-                            && creds.Password == userLogin.Password) != null;
+                    var authResult = authUtils
+                            .VerifyPasswordHash(userLogin.Username, userLogin.Password, foundUserLogin.Password);
+                    switch(authResult)
+                    {
+                        case PasswordVerificationResult.Failed:
+                            return false;
+                        case PasswordVerificationResult.Success:
+                            return true;
+                        case PasswordVerificationResult.SuccessRehashNeeded:
+                            return true;
+                        default:
+                            return false;
+                    }
                 } catch(Exception e)
                 {
-                    Log.Debug("User not authenticated", e);
+                    Log.Debug(e, "User not authenticated");
                     return false;
                 }
             }
@@ -53,15 +74,16 @@ namespace Lib.Models.Database.Auth
                 BuildOptions<AuthDbContext>()))
             {
                 // Hash password
+                userLogin.Password = authUtils
+                        .GeneratePasswordHash(userLogin.Username, userLogin.Password);
+
+                // Set up user
+                userLogin.User.Username = userLogin.Username;
 
                 // Create credentails for authentication
-                context.UserLogins.Add(userLogin);
+                var createdUserLogin = context.UserLogins.Add(userLogin);
                 Log.Debug("Created user login");
 
-                // Create User
-                context.Users.Add(new User(userLogin.Username));
-                Log.Debug("Created new user");
-                // Commit changes
                 var rowsAffected = context.SaveChanges();
                 Log.Debug("Finished setting up new user");
             }
@@ -73,12 +95,12 @@ namespace Lib.Models.Database.Auth
             using (var context = new AuthDbContext(
                 BuildOptions<AuthDbContext>()))
             {
-                if (UserId == null)
-                    throw new ArgumentNullException("User id must be set. You may need to call SetRequestUserId");
+                if (username == null)
+                    throw new ArgumentNullException(nameof(username), "User id must be set. You may need to call SetRequestUserId");
 
                 try
                 {
-                    Log.Debug("!!!!!!!!1 User id is : {id}", UserId);
+                    Log.Debug("!!!!!!!!1 User id is : {id}", username);
                     var foundUser = context.Users
                         .SingleOrDefault(userObj => userObj.Username == username);
                     Log.Debug("Found user: {username}", foundUser.Username);
@@ -86,7 +108,7 @@ namespace Lib.Models.Database.Auth
                 }
                 catch (Exception e)
                 {
-                    Log.Debug("User not found", e);
+                    Log.Debug(e, "User not found");
                     return null;
                 }
             }
@@ -108,7 +130,7 @@ namespace Lib.Models.Database.Auth
                 }
                 catch (Exception e)
                 {
-                    Log.Debug("Users not found", e);
+                    Log.Debug(e, "Users not found");
                     return null;
                 }
             }
