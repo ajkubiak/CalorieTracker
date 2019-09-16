@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using Lib.Models.Auth;
 using Lib.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
+using static Lib.Utils.AuthUtils;
 
 namespace Lib.Models.Database.Auth
 {
@@ -55,6 +56,7 @@ namespace Lib.Models.Database.Auth
                         case PasswordVerificationResult.Success:
                             return true;
                         case PasswordVerificationResult.SuccessRehashNeeded:
+                            AddUserToDb(context, userLogin, isUpdate: true);
                             return true;
                         default:
                             return false;
@@ -73,19 +75,15 @@ namespace Lib.Models.Database.Auth
             using (var context = new AuthDbContext(
                 BuildOptions<AuthDbContext>()))
             {
-                // Hash password
-                userLogin.Password = authUtils
-                        .GeneratePasswordHash(userLogin.Username, userLogin.Password);
-
-                // Set up user
-                userLogin.User.Username = userLogin.Username;
-
-                // Create credentails for authentication
-                var createdUserLogin = context.UserLogins.Add(userLogin);
-                Log.Debug("Created user login");
-
-                var rowsAffected = context.SaveChanges();
-                Log.Debug("Finished setting up new user");
+                try
+                {
+                    AddUserToDb(context, userLogin, isUpdate:false);
+                }
+                catch (DbUpdateException e)
+                {
+                    Log.Error(e, "Error saving changes do dbcontext.");
+                    throw e;
+                }
             }
         }
 
@@ -100,21 +98,25 @@ namespace Lib.Models.Database.Auth
 
                 try
                 {
-                    Log.Debug("!!!!!!!!1 User id is : {id}", username);
                     var foundUser = context.Users
                         .SingleOrDefault(userObj => userObj.Username == username);
                     Log.Debug("Found user: {username}", foundUser.Username);
                     return foundUser;
                 }
-                catch (Exception e)
+                catch (ArgumentNullException e)
                 {
-                    Log.Debug(e, "User not found");
+                    Log.Debug(e, "The user couldn't be retrieved since an argument was null");
+                    return null;
+                }
+                catch (InvalidOperationException e)
+                {
+                    Log.Debug(e, "An illegal operation was performed while retrieving user");
                     return null;
                 }
             }
         }
 
-        public List<User> GetUsers(List<string> userNames)
+        public IList<User> GetUsers(IList<string> userNames)
         {
             Log.Debug("Retrieving {length} users", userNames.Count);
             using (var context = new AuthDbContext(
@@ -122,18 +124,50 @@ namespace Lib.Models.Database.Auth
             {
                 try
                 {
-                    var foundUsers = context.Users
-                        .Where(user => userNames.Contains(user.Username))
-                        .ToList();
-                    Log.Debug("Found {length} users", foundUsers.Count);
-                    return foundUsers;
+                    if (userNames.Count > 0)
+                    {
+                        return context.Users
+                            .Where(user => userNames.Contains(user.Username))
+                            .ToList();
+                    }
+                    return context.Users.ToList();
                 }
-                catch (Exception e)
+                catch (ArgumentNullException e)
                 {
-                    Log.Debug(e, "Users not found");
+                    Log.Debug(e, "Users could not be retrieved since an argument was null");
                     return null;
                 }
             }
         }
+
+        #region Private functions
+        /**
+         * <summary>Add or update a <see cref="UserLogin"/> in the db</summary>
+         * <param name="context">The database context for <see cref="UserLogin"/></param>
+         * <param name="userLogin">The user's login credentials</param>
+         * <param name="isUpdate">
+         *  Whether the user already exists in the db. True to update
+         *  and existing user
+         * </param>
+         */
+        private void AddUserToDb(AuthDbContext context, UserLogin userLogin, bool isUpdate)
+        {
+            // Hash password
+            userLogin.Password = authUtils
+                    .GeneratePasswordHash(userLogin.Username, userLogin.Password);
+
+            // Set up user
+            userLogin.User.Username = userLogin.Username;
+
+            // Create creds for authentication, update if user exists
+            _ = isUpdate
+                ? context.UserLogins.Update(userLogin)
+                : context.UserLogins.Add(userLogin);
+            Log.Debug("Added user login");
+
+            context.SaveChanges();
+            Log.Debug("Finished setting up new user");
+        }
+        #endregion
     }
 }

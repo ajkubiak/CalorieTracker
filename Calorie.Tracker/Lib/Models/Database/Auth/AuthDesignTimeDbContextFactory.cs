@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Lib.Models.Database.Auth

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Text;
 using Lib.Models.Auth;
 using Lib.Models.Database.Auth;
-using Lib.Models.RequestFilter;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -45,24 +45,14 @@ namespace AuthService
             TokenConfig tokenConfig = Configuration.GetSection("tokenConfig").Get<TokenConfig>();
 
             // apply config
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            services
+                .AddAuthentication(AuthUtils.AddAuthentiction())
+                .AddJwtBearer(AuthUtils.AddJwtBearer(Configuration));
 
-            }).AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-                            Configuration.GetSection("tokenConfig").GetValue<string>("secret"))),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
+            /**
+             * Apply RBAC
+             */
+            services.AddAuthorization(AuthUtils.AddAuthorization());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,7 +72,7 @@ namespace AuthService
             RuntimeEnvironment myEnv = RuntimeEnvironment.UNKNOWN;
             try
             {
-                Enum.TryParse<RuntimeEnvironment>(env.EnvironmentName, out myEnv);
+                Enum.TryParse(env.EnvironmentName, out myEnv);
             }
             catch (ArgumentException ex)
             {

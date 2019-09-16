@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Lib.Models.Auth;
 using Lib.Models.Controllers;
 using Lib.Models.Database.Auth;
@@ -36,6 +37,10 @@ namespace AuthService.Controllers
                         .ValidatePasswordMeetsRequirements(userLogin.Password);
                 if (!isValid)
                     return BadRequest($"Password does not meet requirements: {errorMessage}");
+
+                // IMPORTANT: set user role 
+                userLogin.User.Role = UserAuthorization.USER;
+
                 db.CreateUser(userLogin);
                 return new StatusCodeResult(StatusCodes.Status201Created);
             }
@@ -75,13 +80,14 @@ namespace AuthService.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetUsers()
+        [Authorize(Policy = UserAuthorization.POLICY_ADMIN_ONLY)]
+        public IActionResult GetUsers([FromQuery] List<string> usernames)
         {
             Log.Debug("Getting users");
             try
             {
-                db.GetUser("swag");
-                return Ok();
+                var userList = db.GetUsers(usernames);
+                return Ok(userList);
             } catch (Exception e)
             {
                 Log.Error(e, "Exception while getting users");

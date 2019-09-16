@@ -21,7 +21,6 @@ namespace Lib.Utils
          */
         void Initialize(RuntimeEnvironment env);
         string GetDbConnectionString();
-        PasswordHashConfig GetPasswordHashConfig();
     }
 
     public class SettingsUtils : ISettingsUtils
@@ -79,15 +78,6 @@ namespace Lib.Utils
             }
 
             return $"Host={host};Database={databaseName};Username={username};Password={password}";
-        }
-
-        /**
-         * <summary>Get the password hashing configuration.</summary>
-         * <returns>The configuration. Null if it could not parse the information</returns>
-         */
-        public PasswordHashConfig GetPasswordHashConfig()
-        {
-            return config.GetSection("PasswordHashConfig").Get<PasswordHashConfig>();
         }
     }
 }

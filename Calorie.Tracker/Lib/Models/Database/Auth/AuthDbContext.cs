@@ -1,5 +1,4 @@
-﻿using System;
-using Lib.Models.Auth;
+﻿using Lib.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lib.Models.Database.Auth

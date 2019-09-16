@@ -10,6 +10,6 @@ namespace Lib.Models.Database.Auth
         bool Authenticate(UserLogin userLogin);
         void CreateUser(UserLogin userLogin);
         User GetUser(string username);
-        List<User> GetUsers(List<string> userNames);
+        IList<User> GetUsers(IList<string> userNames);
     }
 }

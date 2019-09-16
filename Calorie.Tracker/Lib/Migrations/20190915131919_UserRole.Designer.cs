@@ -3,15 +3,17 @@ using System;
 using Lib.Models.Database.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Lib.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    partial class AuthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190915131919_UserRole")]
+    partial class UserRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +29,8 @@ namespace Lib.Migrations
 
                     b.Property<string>("Email");
 
-                    b.Property<string>("Role");
+                    b.Property<string>("Role")
+                        .IsRequired();
 
                     b.HasKey("Username");
 

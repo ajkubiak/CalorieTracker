@@ -1,25 +1,38 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using System.Linq;
+using System;
 
 namespace Lib.Models.Auth
 {
     public class User
     {
+        private string role;
+
         [Key]
         [MaxLength(20)]
         public string Username { get; set; }
+
         [EmailAddress]
         public string Email { get; set; }
 
-        public User()
+        /**
+         * <exception cref="ArgumentException">The new value is not a valid <see cref="UserRole"/></exception>
+         */
+        [JsonIgnore]
+        public string Role
         {
-            
-        }
-
-        public User(string username)
-        {
-            Username = username;
+            get => role;
+            set
+            {
+                if (UserAuthorization.AllRoles.Contains(value))
+                {
+                    role = value;
+                } else
+                {
+                    throw new ArgumentException($"{value} is not a valid role.");
+                }
+            }
         }
     }
 }
