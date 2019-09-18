@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using static Lib.Utils.AuthUtils;
 
 namespace Lib.Models.Database.Auth
 {
@@ -30,8 +29,8 @@ namespace Lib.Models.Database.Auth
          */
         public bool Authenticate(UserLogin userLogin)
         {
-            using (var context = new AuthDbContext(
-                BuildOptions<AuthDbContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 Log.Debug("Authenticating: {user}", userLogin.Username);
                 try
@@ -72,8 +71,8 @@ namespace Lib.Models.Database.Auth
         public void CreateUser(UserLogin userLogin)
         {
             Log.Debug("Creating user: {username}", userLogin.Username);
-            using (var context = new AuthDbContext(
-                BuildOptions<AuthDbContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 try
                 {
@@ -90,8 +89,8 @@ namespace Lib.Models.Database.Auth
         public User GetUser(string username)
         {
             Log.Debug("Retrieving user: {username}", username);
-            using (var context = new AuthDbContext(
-                BuildOptions<AuthDbContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 if (username == null)
                     throw new ArgumentNullException(nameof(username), "User id must be set. You may need to call SetRequestUserId");
@@ -119,8 +118,8 @@ namespace Lib.Models.Database.Auth
         public IList<User> GetUsers(IList<string> userNames)
         {
             Log.Debug("Retrieving {length} users", userNames.Count);
-            using (var context = new AuthDbContext(
-                BuildOptions<AuthDbContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 try
                 {
@@ -150,7 +149,7 @@ namespace Lib.Models.Database.Auth
          *  and existing user
          * </param>
          */
-        private void AddUserToDb(AuthDbContext context, UserLogin userLogin, bool isUpdate)
+        private void AddUserToDb(CCDbContext context, UserLogin userLogin, bool isUpdate)
         {
             // Hash password
             userLogin.Password = authUtils

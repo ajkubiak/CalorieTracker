@@ -12,6 +12,7 @@
     <Folder Include="Models\Database\Auth\" />
     <Folder Include="Models\Diary\" />
     <Folder Include="Models\Controllers\" />
+    <Folder Include="Models\Database\Diary\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.8.0" />
@@ -51,5 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Controller\BaseController.cs" />
+    <Compile Remove="Models\Database\Auth\AuthDbContext.cs" />
+    <Compile Remove="Models\Database\Diary\DiaryDbContext.cs" />
+    <Compile Remove="Models\Database\Diary\DiaryDesignTimeDbContextFactory.cs" />
+    <Compile Remove="Models\Database\BaseDesignTimeDbContextFactory.cs" />
+    <Compile Remove="Models\BaseOwnedByModel.cs" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ namespace Lib.Models.Auth
         private string role;
 
         [Key]
-        [MaxLength(20)]
+        [MaxLength(20, ErrorMessage = "Username cannot be longer than 20 characters")]
         public string Username { get; set; }
 
         [EmailAddress]

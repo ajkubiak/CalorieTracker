@@ -1,32 +1,33 @@
 ﻿using System;
-using DiaryService.Database;
+using Lib.Models.Controllers;
+using Lib.Models.Database.Diary;
 using Lib.Models.Diary;
 using Lib.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
 namespace DiaryService.Controllers
 {
-    /**
-     * <summary>
-     *  Controls food items.
-     * </summary>
-     */
-    [Route("api/fooditems")]
-	public class FoodItemController : BaseController
+    [Authorize]
+    [ApiController]
+    [Route("[controller]")]
+    public class FoodItemController : BaseController
 	{
-        public FoodItemController(ISettingsUtils settingsUtils, IDatabaseApi db)
-            : base(settingsUtils, db)
-        {
+        private readonly IDiaryDb db;
 
+        public FoodItemController(ISettingsUtils settingsUtils, IDiaryDb db)
+            : base(settingsUtils)
+        {
+            this.db = db;
         }
 
         /**
          * <summary>Retrieves food item objects</summary>
          */
         [HttpGet]
-		public IActionResult Get()
+		public IActionResult GetFoodItems()
 		{
             Log.Debug("Retrieving all food items");
             try
@@ -36,7 +37,7 @@ namespace DiaryService.Controllers
                 return Ok(foods);
             } catch (Exception e)
             {
-                Log.Error("Exception retrieving food items", e);
+                Log.Error(e, "Exception retrieving food items");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -45,7 +46,7 @@ namespace DiaryService.Controllers
          * <summary>Retrieves meal objects</summary>
          */
 		[HttpGet("{id}")]
-		public string Get(int id)
+		public string Get([FromRoute] Guid id)
 		{
 			return "value";
 		}
@@ -56,7 +57,7 @@ namespace DiaryService.Controllers
 		[HttpPost]
 		public IActionResult Post([FromBody]FoodItem foodItem)
 		{
-            Log.Debug("Creating new food item", foodItem);
+            Log.Debug("Creating new food item: {item}", foodItem);
             try
             {
                 var food = db.CreateFoodItem(foodItem);
@@ -65,7 +66,7 @@ namespace DiaryService.Controllers
             }
             catch (Exception e)
             {
-                Log.Error("Exception creating food item", e);
+                Log.Error(e, "Exception creating food item");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -82,9 +83,9 @@ namespace DiaryService.Controllers
          * <summary>Retrieves meal objects</summary>
          */
 		[HttpDelete("{id}")]
-		public IActionResult Delete(long id)
+		public IActionResult Delete(Guid id)
 		{
-            Log.Debug("Deleting food item: ", id);
+            Log.Debug("Deleting food item: {id}", id);
             try
             {
                 db.DeleteFoodItem(id);
@@ -93,13 +94,13 @@ namespace DiaryService.Controllers
             }
             catch (InvalidOperationException ioe)
             {
-                Log.Debug("The food item was not found.", ioe);
+                Log.Debug(ioe, "The food item was not found.");
                 return NotFound();
                     
             }
             catch (Exception e)
             {
-                Log.Error("Exception creating food item", e);
+                Log.Error(e, "Exception creating food item");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

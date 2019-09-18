@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Security.Claims;
-using System.Text;
 using Lib.Models.Auth;
 using Lib.Models.Database.Auth;
 using Lib.Utils;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace AuthService
@@ -31,16 +27,13 @@ namespace AuthService
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddHttpContextAccessor();
 
-            /**
-             * Singletons
-             */
+            #region Singletons
             services.AddSingleton<ISettingsUtils, SettingsUtils>();
             services.AddSingleton<IAuthUtils, AuthUtils>();
             services.AddScoped<IAuthDb, AuthDb>();
+            #endregion
 
-            /**
-             * Use JWT authorization
-             */
+            #region JWT Authentication/Authorization
             // get config
             TokenConfig tokenConfig = Configuration.GetSection("tokenConfig").Get<TokenConfig>();
 
@@ -49,10 +42,9 @@ namespace AuthService
                 .AddAuthentication(AuthUtils.AddAuthentiction())
                 .AddJwtBearer(AuthUtils.AddJwtBearer(Configuration));
 
-            /**
-             * Apply RBAC
-             */
+            // Apply RBAC
             services.AddAuthorization(AuthUtils.AddAuthorization());
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -23,10 +23,6 @@
     <Compile Remove="Controllers\ValuesController.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Database\" />
-    <Folder Include="Database\EfContext\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Lib\Lib.csproj" />
   </ItemGroup>
   <ItemGroup>

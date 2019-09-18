@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lib.Models;
-using Microsoft.EntityFrameworkCore;
+using Lib.Models.Diary;
 
-namespace DiaryService.Database
+namespace Lib.Models.Database.Diary
 {
-    public interface IDatabaseApi
+    public interface IDiaryDb
     {
         IList<FoodItem> GetFoodItems();
         FoodItem CreateFoodItem(FoodItem foodItem);

@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Lib.Models.Auth;
 
 namespace Lib.Models.Diary
 {
     public class DiaryEntry : BaseModel
     {
-        //[Key]
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        //public long Id { get; set; }
+        [Required]
+        public string OwnedById { get; set; }
+
+        [Required]
+        [ForeignKey("OwnedById")]
+        virtual public User OwnedBy { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime EntryDate { get; set; }
@@ -24,6 +28,7 @@ namespace Lib.Models.Diary
          *  groupings.
          * </summary>
          */
-        public virtual SortedList<uint, Meal> MealGroupings { get; set; } = new SortedList<uint, Meal>(10);
+         [MaxLength(10)]
+        public virtual ISet<Meal> MealGroupings { get; set; }
     }
 }

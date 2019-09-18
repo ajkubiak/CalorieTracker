@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DiaryService.Database.EfContext;
-using Lib.Models;
-using Lib.Models.Database;
+using Lib.Models.Diary;
 using Lib.Utils;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.AspNetCore.Http;
 
-namespace DiaryService.Database
+namespace Lib.Models.Database.Diary
 {
-    public class DatabaseApi : BaseDatabaseApi, IDatabaseApi
+    public class DiaryDb : BaseDatabaseApi, IDiaryDb
     {
-        
-
-        public DatabaseApi(ISettingsUtils settingsUtils)
-            : base(settingsUtils)
+        public DiaryDb(IHttpContextAccessor httpContextAccessor, ISettingsUtils settingsUtils)
+            : base(httpContextAccessor, settingsUtils)
         {
             // empty
         }
@@ -23,8 +18,8 @@ namespace DiaryService.Database
 
         public FoodItem CreateFoodItem(FoodItem foodItem)
         {
-            using (var context = new FoodItemContext(
-                BuildOptions<FoodItemContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 return context.FoodItems.Add(foodItem).Entity;
             }
@@ -36,8 +31,8 @@ namespace DiaryService.Database
          */
         public void DeleteFoodItem(Guid id)
         {
-            using (var context = new FoodItemContext(
-                BuildOptions<FoodItemContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 // data validation
                 if (id == Guid.Empty)
@@ -53,8 +48,8 @@ namespace DiaryService.Database
 
         public IList<FoodItem> GetFoodItems()
         {
-            using (var context = new FoodItemContext(
-                BuildOptions<FoodItemContext>()))
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
             {
                 return context.FoodItems.ToList();
             }
