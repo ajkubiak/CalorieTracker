@@ -2,7 +2,6 @@
 using Lib.Models.Controllers;
 using Lib.Models.Database.Diary;
 using Lib.Models.Diary;
-using Lib.Models.Exceptions;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -52,25 +51,6 @@ namespace DiaryService.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]FoodItemDto foodItemDto)
         {
-            //Log.Debug("Creating new food item: {item}", foodItemDto);
-            //if (foodItemDto == null)
-            //    throw new ArgumentNullException(nameof(foodItemDto), "The food item cannot be null");
-
-            //try
-            //{
-            //    FoodItem foodItem = new FoodItem(foodItemDto)
-            //    {
-            //        OwnedById = authUtils.GetTokenUserId(HttpContext)
-            //    };
-            //    var food = db.Create(foodItem);
-            //    Log.Debug("Created food: ", food);
-            //    return Created(new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}/{food.Id}"), food);
-            //}
-            //catch (Exception e)
-            //{
-            //    Log.Error(e, "Exception creating food item");
-            //    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            //}
             return base.Post<FoodItem, FoodItemDto>(db, foodItemDto);
         }
 
@@ -80,20 +60,6 @@ namespace DiaryService.Controllers
         [HttpGet("{id}")]
 		public IActionResult Get([FromRoute] Guid id)
 		{
-            //if (id == Guid.Empty)
-            //    throw new ArgumentException("There was no id provided to this method");
-            //try
-            //{
-            //    var item = db.Read<FoodItem>(id);
-            //    if (authUtils.CanAccessEntity(item, HttpContext))
-            //        return Ok(item);
-            //    return Unauthorized();
-            //}
-            //catch (Exception e)
-            //{
-            //    Log.Error(e, "Couldn't retrieve the item");
-            //    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            //}
             return base.Get<FoodItem>(db, id);
         }
 
@@ -112,30 +78,6 @@ namespace DiaryService.Controllers
         [HttpDelete("{id}")]
 		public IActionResult Delete(Guid id)
 		{
-            //Log.Debug("Deleting food item: {id}", id);
-            //try
-            //{
-            //    FoodItem item = db.Read<FoodItem>(id);
-            //    db.Delete(item);
-            //    Log.Debug("Deleted the food item");
-            //    return NoContent();
-            //}
-            //catch (UnauthorizedException ue)
-            //{
-            //    Log.Debug(ue, "Couldn't access any item with that ID");
-            //    return Unauthorized();
-            //}
-            //catch (InvalidOperationException ioe)
-            //{
-            //    Log.Debug(ioe, "The food item was not found.");
-            //    return NotFound();
-
-            //}
-            //catch (Exception e)
-            //{
-            //    Log.Error(e, "Exception creating food item");
-            //    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            //}
             return base.Delete<FoodItem>(db, id);
         }
         #endregion

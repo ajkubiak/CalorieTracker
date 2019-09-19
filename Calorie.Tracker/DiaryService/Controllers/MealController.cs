@@ -1,13 +1,10 @@
 ﻿using System;
 using Lib.Models.Controllers;
-using Lib.Models.Database;
 using Lib.Models.Database.Diary;
 using Lib.Models.Diary;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
 namespace DiaryService.Controllers
 {
@@ -21,7 +18,7 @@ namespace DiaryService.Controllers
     [Route("[controller]")]
     public class MealController : BaseController
 	{
-        private readonly ICrudOps db;
+        private readonly IDiaryDb db;
 
         public MealController(ISettingsUtils settingsUtils, IAuthUtils authUtils, IDiaryDb db)
             : base(settingsUtils, authUtils)
@@ -40,25 +37,6 @@ namespace DiaryService.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] MealDto mealDto)
         {
-            //Log.Debug("Creating new meal: {item}", mealDto);
-            //if (mealDto == null)
-            //    throw new ArgumentNullException(nameof(mealDto), "The meal cannot be null");
-
-            //try
-            //{
-            //    Meal meal = new Meal(mealDto)
-            //    {
-            //        OwnedById = authUtils.GetTokenUserId(HttpContext)
-            //    };
-            //    var createdMeal = db.Create(meal);
-            //    Log.Debug("Created meal: {meal}", createdMeal);
-            //    return Created(new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}/{createdMeal.Id}"), createdMeal);
-            //}
-            //catch (Exception e)
-            //{
-            //    Log.Error(e, "Exception creating meal");
-            //    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            //}
             return base.Post<Meal, MealDto>(db, mealDto);
         }
 
