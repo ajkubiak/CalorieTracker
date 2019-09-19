@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Lib.Models.Auth;
+using Newtonsoft.Json;
 
 namespace Lib.Models.Diary
 {
     public class DiaryEntry : BaseModel
     {
-        [Required]
-        public string OwnedById { get; set; }
-
-        [Required]
-        [ForeignKey("OwnedById")]
-        virtual public User OwnedBy { get; set; }
-
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime EntryDate { get; set; }
 

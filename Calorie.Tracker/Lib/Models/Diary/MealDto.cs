@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace Lib.Models.Diary
 {
-    public class Meal : BaseModel
+    public class MealDto : BaseDto
     {
         /**
          * <summary>
@@ -30,13 +30,15 @@ namespace Lib.Models.Diary
         [MaxLength(20)]
         public virtual ISet<FoodItem> FoodItems { get; set; }
 
-        public Meal() { }
-
-        public Meal(MealDto mealDto)
+        public MealDto()
         {
-            Name = mealDto.Name;
-            Order = mealDto.Order;
-            FoodItems = mealDto.FoodItems;
+        }
+
+        public MealDto(Meal meal)
+        {
+            Name = meal.Name;
+            Order = meal.Order;
+            FoodItems = meal.FoodItems;
         }
     }
 }

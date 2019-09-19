@@ -9,5 +9,8 @@ namespace Lib.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
+
+        [Required]
+        public string OwnedById { get; set; }
     }
 }

@@ -1,17 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Lib.Models.Auth;
-using Newtonsoft.Json;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lib.Models.Diary
 {
     /**
-     * <summary>
-     *  A line item of food, e.g. Apple, Lettuce, Chocolate bar.
-     * </summary>
-     * 
+     * <summary>Transport for <see cref="FoodItem"/></summary>
      */
-    public class FoodItem : BaseModel
+    public class FoodItemDto : BaseDto
     {
         /**
          * <summary>
@@ -46,21 +41,13 @@ namespace Lib.Models.Diary
         [Required]
         public float Fat { get; set; }
 
-        public FoodItem() { }
-
-        public FoodItem(float carbohydrates, float protein, float fat)
+        public FoodItemDto() { }
+        public FoodItemDto(FoodItem foodItem)
         {
-            Carbohydrates = carbohydrates;
-            Protein = protein;
-            Fat = fat;
-        }
-
-        public FoodItem(FoodItemDto foodDto)
-        {
-            Name = foodDto.Name;
-            Carbohydrates = foodDto.Carbohydrates;
-            Protein = foodDto.Protein;
-            Fat = foodDto.Fat;
+            Name = foodItem.Name;
+            Carbohydrates = foodItem.Carbohydrates;
+            Protein = foodItem.Protein;
+            Fat = foodItem.Fat;
         }
     }
 }

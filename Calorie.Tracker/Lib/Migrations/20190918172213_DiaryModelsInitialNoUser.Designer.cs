@@ -3,15 +3,17 @@ using System;
 using Lib.Models.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Lib.Migrations
 {
     [DbContext(typeof(CCDbContext))]
-    partial class CCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190918172213_DiaryModelsInitialNoUser")]
+    partial class DiaryModelsInitialNoUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,6 +138,14 @@ namespace Lib.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Lib.Models.Diary.DiaryEntry", b =>
+                {
+                    b.HasOne("Lib.Models.Auth.User", "OwnedBy")
+                        .WithMany()
+                        .HasForeignKey("OwnedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Lib.Models.Diary.FoodItem", b =>
                 {
                     b.HasOne("Lib.Models.Diary.Meal")
@@ -148,6 +158,11 @@ namespace Lib.Migrations
                     b.HasOne("Lib.Models.Diary.DiaryEntry")
                         .WithMany("MealGroupings")
                         .HasForeignKey("DiaryEntryId");
+
+                    b.HasOne("Lib.Models.Auth.User", "OwnedBy")
+                        .WithMany()
+                        .HasForeignKey("OwnedById")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

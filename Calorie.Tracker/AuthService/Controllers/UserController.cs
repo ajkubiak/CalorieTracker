@@ -16,13 +16,11 @@ namespace AuthService.Controllers
     [Route("[controller]")]
     public class UserController : BaseController
     {
-        private readonly IAuthUtils authUtils;
         private readonly IAuthDb db;
 
         public UserController(ISettingsUtils settingsUtils, IAuthDb db, IAuthUtils authUtils)
-            : base(settingsUtils)
+            : base(settingsUtils, authUtils)
         {
-            this.authUtils = authUtils;
             this.db = db;
         }
 

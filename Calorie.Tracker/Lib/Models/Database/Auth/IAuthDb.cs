@@ -6,7 +6,6 @@ namespace Lib.Models.Database.Auth
 {
     public interface IAuthDb
     {
-        string UserId { get; set; }
         bool Authenticate(UserLogin userLogin);
         void CreateUser(UserLogin userLogin);
         User GetUser(string username);

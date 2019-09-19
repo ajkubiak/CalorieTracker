@@ -12,12 +12,10 @@ namespace Lib.Models.Database.Auth
 {
     public class AuthDb : BaseDatabaseApi, IAuthDb
     {
-        private readonly IAuthUtils authUtils;
-
         public AuthDb(IHttpContextAccessor httpContextAccessor, ISettingsUtils settingsUtils, IAuthUtils authUtils)
-            : base(httpContextAccessor, settingsUtils)
+            : base(httpContextAccessor, settingsUtils, authUtils)
         {
-            this.authUtils = authUtils;
+            // empty
         }
 
         /**
@@ -60,7 +58,8 @@ namespace Lib.Models.Database.Auth
                         default:
                             return false;
                     }
-                } catch(Exception e)
+                }
+                catch (System.Exception e)
                 {
                     Log.Debug(e, "User not authenticated");
                     return false;

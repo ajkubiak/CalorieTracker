@@ -13,6 +13,7 @@
     <Folder Include="Models\Diary\" />
     <Folder Include="Models\Controllers\" />
     <Folder Include="Models\Database\Diary\" />
+    <Folder Include="Models\Exceptions\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.8.0" />

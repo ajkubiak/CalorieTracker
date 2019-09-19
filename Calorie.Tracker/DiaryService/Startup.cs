@@ -29,6 +29,7 @@ namespace DiaryService
 
             #region Singletons
             services.AddSingleton<ISettingsUtils, SettingsUtils>();
+            services.AddSingleton<IAuthUtils, AuthUtils>();
             services.AddScoped<IDiaryDb, DiaryDb>();
             #endregion
 
