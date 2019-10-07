@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace Lib.Models.Diary
 {
-    public class Meal : BaseModel
+    public class Meal : BaseModel, IManyToMany<FoodItemMeal>
     {
         /**
          * <summary>
@@ -24,11 +25,12 @@ namespace Lib.Models.Diary
 
         /**
          * <summary>
-         *  A list of <see cref="FoodItem"/> objects that compose a meal
+         *  A many-to-many relationship with <see cref="FoodItem"/>
          * </summary>
          */
         [MaxLength(20)]
-        public virtual ISet<FoodItem> FoodItems { get; set; }
+        public virtual ICollection<FoodItemMeal> FoodItemLinks { get; set; }
+        public virtual ISet<FoodItemMeal> ManyToMany { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public Meal() { }
 
@@ -36,7 +38,6 @@ namespace Lib.Models.Diary
         {
             Name = mealDto.Name;
             Order = mealDto.Order;
-            FoodItems = mealDto.FoodItems;
         }
     }
 }

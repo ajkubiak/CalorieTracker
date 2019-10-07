@@ -40,5 +40,7 @@ namespace Lib.Models.Database
          * <exception cref="UnauthorizedException">Couldn't access the item</exception>
          */
         void Delete<T>(T item) where T : BaseModel;
+
+        void AddRelationship<TFirst, TSecond, TRelationship>(Guid firstId, Guid secondId) where TFirst : BaseModel where TSecond : BaseModel;
     }
 }

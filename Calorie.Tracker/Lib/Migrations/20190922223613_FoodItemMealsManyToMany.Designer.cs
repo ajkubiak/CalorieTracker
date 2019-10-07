@@ -3,15 +3,17 @@ using System;
 using Lib.Models.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Lib.Migrations
 {
     [DbContext(typeof(CCDbContext))]
-    partial class CCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190922223613_FoodItemMealsManyToMany")]
+    partial class FoodItemMealsManyToMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,12 +150,12 @@ namespace Lib.Migrations
             modelBuilder.Entity("Lib.Models.Diary.FoodItemMeal", b =>
                 {
                     b.HasOne("Lib.Models.Diary.FoodItem", "FoodItem")
-                        .WithMany("MealLinks")
+                        .WithMany("FoodItemMeals")
                         .HasForeignKey("FoodItemId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Lib.Models.Diary.Meal", "Meal")
-                        .WithMany("FoodItemLinks")
+                        .WithMany("FoodItemMeals")
                         .HasForeignKey("MealId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -28,7 +28,7 @@ namespace Lib.Models.Diary
          * </summary>
          */
         [MaxLength(20)]
-        public virtual ISet<FoodItem> FoodItems { get; set; }
+        public virtual ISet<FoodItemDto> FoodItemDtos { get; set; }
 
         public MealDto()
         {
@@ -38,7 +38,11 @@ namespace Lib.Models.Diary
         {
             Name = meal.Name;
             Order = meal.Order;
-            FoodItems = meal.FoodItems;
+            //FoodItems = meal.FoodItems;
+            foreach (var item in meal.FoodItemLinks)
+            {
+                FoodItemDtos.Add(new FoodItemDto(item.FoodItem));
+            }
         }
     }
 }

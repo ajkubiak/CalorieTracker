@@ -3,15 +3,17 @@ using System;
 using Lib.Models.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Lib.Migrations
 {
     [DbContext(typeof(CCDbContext))]
-    partial class CCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190922195834_DiaryModelsNewRelationship2")]
+    partial class DiaryModelsNewRelationship2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,25 +101,14 @@ namespace Lib.Migrations
                     b.ToTable("FoodItems");
                 });
 
-            modelBuilder.Entity("Lib.Models.Diary.FoodItemMeal", b =>
-                {
-                    b.Property<Guid>("MealId");
-
-                    b.Property<Guid>("FoodItemId");
-
-                    b.HasKey("MealId", "FoodItemId");
-
-                    b.HasIndex("FoodItemId");
-
-                    b.ToTable("FoodItemMeal");
-                });
-
             modelBuilder.Entity("Lib.Models.Diary.Meal", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<Guid?>("DiaryEntryId");
+
+                    b.Property<Guid?>("FoodItemId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -132,6 +123,8 @@ namespace Lib.Migrations
 
                     b.HasIndex("DiaryEntryId");
 
+                    b.HasIndex("FoodItemId");
+
                     b.HasIndex("OwnedById");
 
                     b.ToTable("Meals");
@@ -145,24 +138,15 @@ namespace Lib.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Lib.Models.Diary.FoodItemMeal", b =>
-                {
-                    b.HasOne("Lib.Models.Diary.FoodItem", "FoodItem")
-                        .WithMany("MealLinks")
-                        .HasForeignKey("FoodItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Lib.Models.Diary.Meal", "Meal")
-                        .WithMany("FoodItemLinks")
-                        .HasForeignKey("MealId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Lib.Models.Diary.Meal", b =>
                 {
                     b.HasOne("Lib.Models.Diary.DiaryEntry")
                         .WithMany("MealGroupings")
                         .HasForeignKey("DiaryEntryId");
+
+                    b.HasOne("Lib.Models.Diary.FoodItem")
+                        .WithMany("Meals")
+                        .HasForeignKey("FoodItemId");
                 });
 #pragma warning restore 612, 618
         }

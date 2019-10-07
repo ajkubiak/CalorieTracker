@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Lib.Models.Auth;
 using Newtonsoft.Json;
@@ -45,6 +46,14 @@ namespace Lib.Models.Diary
          */
         [Required]
         public float Fat { get; set; }
+
+        /**
+         * <summary>
+         *  A many-to-many relationship with <see cref="Meal"/>
+         * </summary>
+         */
+        [MaxLength(20)]
+        public virtual ISet<FoodItemMeal> MealLinks { get; set; }
 
         public FoodItem() { }
 

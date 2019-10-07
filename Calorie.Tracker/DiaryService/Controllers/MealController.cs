@@ -2,9 +2,12 @@
 using Lib.Models.Controllers;
 using Lib.Models.Database.Diary;
 using Lib.Models.Diary;
+using Lib.Models.Exceptions;
 using Lib.Utils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace DiaryService.Controllers
 {
@@ -65,6 +68,45 @@ namespace DiaryService.Controllers
         public IActionResult Delete([FromRoute] Guid id)
         {
             return base.Delete<Meal>(db, id);
+        }
+
+        /**
+         * <summary>Adds a <see cref="FoodItem"/> to a <see cref="Meal"/></summary>
+         */
+        public IActionResult AddFoodToMeal(Guid mealId, Guid foodId)
+        {
+            Log.Debug("Adding... meal:{mealid}, food:{foodid}", mealId, foodId);
+            if (mealId == Guid.Empty || foodId == Guid.Empty)
+                return new StatusCodeResult(StatusCodes.Status422UnprocessableEntity);
+
+            try
+            {
+                //Meal meal = db.Read<Meal>(mealId);
+                //FoodItem item = db.Read<FoodItem>(foodId);
+                //var relationship = new FoodItemMeal()
+                //{
+                //    Meal = meal,
+                //    FoodItem = item
+                //};
+                //db.Create<FoodItemMeal>(relationship);
+                db.AddRelationship<Meal, FoodItem, FoodItemMeal>(mealId, foodId);
+            }
+            catch (UnauthorizedException ue)
+            {
+                Log.Debug(ue, "Couldn't access any item with that ID");
+                return Unauthorized();
+            }
+            catch (InvalidOperationException ioe)
+            {
+                Log.Debug(ioe, "The item was not found.");
+                return NotFound();
+
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Exception deleting item");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
         #endregion
 

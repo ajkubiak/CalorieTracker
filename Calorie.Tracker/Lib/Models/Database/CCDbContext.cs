@@ -21,12 +21,27 @@ namespace Lib.Models.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region OwnedBy Indices
             modelBuilder.Entity<DiaryEntry>()
                 .HasIndex(item => item.OwnedById);
             modelBuilder.Entity<Meal>()
                 .HasIndex(item => item.OwnedById);
             modelBuilder.Entity<FoodItem>()
                 .HasIndex(item => item.OwnedById);
+            #endregion
+
+            #region FoodItem -  Meal relationship
+            modelBuilder.Entity<FoodItemMeal>()
+                .HasKey(bc => new { bc.MealId, bc.FoodItemId });
+            modelBuilder.Entity<FoodItemMeal>()
+                .HasOne(fim => fim.Meal)
+                .WithMany(foodItems => foodItems.FoodItemLinks)
+                .HasForeignKey(fim => fim.MealId);
+            modelBuilder.Entity<FoodItemMeal>()
+                .HasOne(fim => fim.FoodItem)
+                .WithMany(meal => meal.MealLinks)
+                .HasForeignKey(fim => fim.FoodItemId);
+            #endregion
         }
     }
 }

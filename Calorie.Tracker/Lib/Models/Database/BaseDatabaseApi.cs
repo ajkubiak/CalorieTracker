@@ -107,6 +107,43 @@ namespace Lib.Models.Database
                 }
             }
         }
+
+        public void AddRelationship<TFirst, TSecond, TRelationship>(Guid firstId, Guid secondId)
+            where TFirst : BaseModel, IManyToMany<TRelationship> where TSecond : BaseModel where TRelationship : new()
+        {
+            
+            //TFirstitem = Read<FoodItem>(foodId);
+            //var relationship = new FoodItemMeal()
+            //{
+            //    Meal = meal,
+            //    FoodItem = item
+            //};
+            if (firstId == Guid.Empty)
+                throw new ArgumentException("Both of the IDs must be defined to add a relationship", nameof(firstId));
+            if (secondId == Guid.Empty)
+                throw new ArgumentException("Both of the IDs must be defined to add a relationship", nameof(secondId));
+
+            using (var context = new CCDbContext(
+                BuildOptions<CCDbContext>()))
+            {
+                TFirst first = Read<TFirst>(firstId);
+                TSecond second = Read<TSecond>(secondId);
+
+                // Check is owned by this user
+                if (authUtils.CanAccessEntity(first, httpContextAccessor.HttpContext)
+                        && authUtils.CanAccessEntity(second, httpContextAccessor.HttpContext))
+                {
+                    first.ManyToMany.Add(second);
+                    context.Add(item);
+                    int rowsAffected = context.SaveChanges();
+                    Log.Debug("{rows} rows were affected by this delete", rowsAffected);
+                }
+                else
+                {
+                    throw new UnauthorizedException("The user does not have access to this item or the item was not found");
+                }
+            }
+        }
         #endregion
     }
 }
