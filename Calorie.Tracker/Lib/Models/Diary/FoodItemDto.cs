@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Lib.Models;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Lib.Models.Diary
@@ -7,7 +9,7 @@ namespace Lib.Models.Diary
      * <summary>Transport for <see cref="FoodItem"/></summary>
      */
     public class FoodItemDto : BaseDto
-    {
+    { 
         /**
          * <summary>
          *  The name of this food
@@ -41,13 +43,11 @@ namespace Lib.Models.Diary
         [Required]
         public float Fat { get; set; }
 
-        public FoodItemDto() { }
-        public FoodItemDto(FoodItem foodItem)
-        {
-            Name = foodItem.Name;
-            Carbohydrates = foodItem.Carbohydrates;
-            Protein = foodItem.Protein;
-            Fat = foodItem.Fat;
-        }
+        /**
+         * <summary>
+         *  A list of <see cref="Meal"/> object ids in which this food is included
+         * </summary>
+         */
+        public virtual ISet<Guid> MealIds { get; set; }
     }
 }

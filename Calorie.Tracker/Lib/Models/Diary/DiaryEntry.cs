@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Lib.Models.Auth;
-using Newtonsoft.Json;
 
 namespace Lib.Models.Diary
 {

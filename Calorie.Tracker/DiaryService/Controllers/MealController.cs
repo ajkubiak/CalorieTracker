@@ -49,7 +49,7 @@ namespace DiaryService.Controllers
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] Guid id)
         {
-            return base.Get<Meal>(db, id);
+            return base.Get<Meal, MealDto>(db, id);
         }
 
         /**
@@ -78,18 +78,11 @@ namespace DiaryService.Controllers
             Log.Debug("Adding... meal:{mealid}, food:{foodid}", mealId, foodId);
             if (mealId == Guid.Empty || foodId == Guid.Empty)
                 return new StatusCodeResult(StatusCodes.Status422UnprocessableEntity);
-
             try
             {
-                //Meal meal = db.Read<Meal>(mealId);
-                //FoodItem item = db.Read<FoodItem>(foodId);
-                //var relationship = new FoodItemMeal()
-                //{
-                //    Meal = meal,
-                //    FoodItem = item
-                //};
-                //db.Create<FoodItemMeal>(relationship);
-                db.AddRelationship<Meal, FoodItem, FoodItemMeal>(mealId, foodId);
+                db.AddManytoMany<FoodItemMeal>(mealId, foodId);
+                return NoContent();
+
             }
             catch (UnauthorizedException ue)
             {

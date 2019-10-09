@@ -41,6 +41,6 @@ namespace Lib.Models.Database
          */
         void Delete<T>(T item) where T : BaseModel;
 
-        void AddRelationship<TFirst, TSecond, TRelationship>(Guid firstId, Guid secondId) where TFirst : BaseModel where TSecond : BaseModel;
+        void AddManytoMany<TRelationship>(Guid firstId, Guid secondId) where TRelationship : IManyToMany, new();
     }
 }

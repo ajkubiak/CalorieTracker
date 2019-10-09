@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace Lib.Models.Diary
 {
-    public class Meal : BaseModel, IManyToMany<FoodItemMeal>
+    public class Meal : BaseModel, IDtoGenerator<MealDto>
     {
         /**
          * <summary>
@@ -30,14 +31,21 @@ namespace Lib.Models.Diary
          */
         [MaxLength(20)]
         public virtual ICollection<FoodItemMeal> FoodItemLinks { get; set; }
-        public virtual ISet<FoodItemMeal> ManyToMany { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-        public Meal() { }
-
-        public Meal(MealDto mealDto)
+        public MealDto GenerateDto()
         {
-            Name = mealDto.Name;
-            Order = mealDto.Order;
+            ISet<Guid> foodItemIds = new HashSet<Guid>();
+            foreach (FoodItemMeal foodItemMeal in FoodItemLinks)
+            {
+                foodItemIds.Add(foodItemMeal.FoodItemId);
+            }
+            return new MealDto()
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Order = this.Order,
+                FoodItemIds = foodItemIds
+            };
         }
     }
 }

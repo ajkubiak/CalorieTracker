@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Lib.Models.Auth;
@@ -12,7 +13,7 @@ namespace Lib.Models.Diary
      * </summary>
      * 
      */
-    public class FoodItem : BaseModel
+    public class FoodItem : BaseModel, IDtoGenerator<FoodItemDto>
     {
         /**
          * <summary>
@@ -53,23 +54,24 @@ namespace Lib.Models.Diary
          * </summary>
          */
         [MaxLength(20)]
-        public virtual ISet<FoodItemMeal> MealLinks { get; set; }
+        public virtual ICollection<FoodItemMeal> MealLinks { get; set; }
 
-        public FoodItem() { }
-
-        public FoodItem(float carbohydrates, float protein, float fat)
+        public FoodItemDto GenerateDto()
         {
-            Carbohydrates = carbohydrates;
-            Protein = protein;
-            Fat = fat;
-        }
-
-        public FoodItem(FoodItemDto foodDto)
-        {
-            Name = foodDto.Name;
-            Carbohydrates = foodDto.Carbohydrates;
-            Protein = foodDto.Protein;
-            Fat = foodDto.Fat;
+            ISet<Guid> mealIds = new HashSet<Guid>();
+            foreach (FoodItemMeal foodItemMeal in MealLinks)
+            {
+                mealIds.Add(foodItemMeal.MealId);
+            }
+            return new FoodItemDto()
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Carbohydrates = this.Carbohydrates,
+                Protein = this.Protein,
+                Fat = this.Fat,
+                MealIds = mealIds
+            };
         }
     }
 }

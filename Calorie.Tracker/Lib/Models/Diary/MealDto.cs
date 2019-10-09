@@ -24,25 +24,10 @@ namespace Lib.Models.Diary
 
         /**
          * <summary>
-         *  A list of <see cref="FoodItem"/> objects that compose a meal
+         *  A list of <see cref="FoodItem"/> object ids that compose a meal
          * </summary>
          */
         [MaxLength(20)]
-        public virtual ISet<FoodItemDto> FoodItemDtos { get; set; }
-
-        public MealDto()
-        {
-        }
-
-        public MealDto(Meal meal)
-        {
-            Name = meal.Name;
-            Order = meal.Order;
-            //FoodItems = meal.FoodItems;
-            foreach (var item in meal.FoodItemLinks)
-            {
-                FoodItemDtos.Add(new FoodItemDto(item.FoodItem));
-            }
-        }
+        public virtual ISet<Guid> FoodItemIds { get; set; }
     }
 }

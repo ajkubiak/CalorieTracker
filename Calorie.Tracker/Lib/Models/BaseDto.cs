@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Lib.Models
 {
-    public class BaseDto
+    public abstract class BaseDto
     {
         public Guid Id { get; set; }
     }

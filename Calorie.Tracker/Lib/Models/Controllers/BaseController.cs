@@ -22,7 +22,7 @@ namespace Lib.Models.Controllers
         /**
          * <summary>Retrieves an object by id</summary>
          */
-        public IActionResult Get<T>(ICrudOps db, Guid id) where T : BaseModel
+        public IActionResult Get<T, TDto>(ICrudOps db, Guid id) where T : BaseModel, IDtoGenerator<TDto> where TDto : BaseDto
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("There was no id provided to this method");
@@ -31,7 +31,7 @@ namespace Lib.Models.Controllers
             {
                 var item = db.Read<T>(id);
                 if (authUtils.CanAccessEntity(item, HttpContext))
-                    return Ok(item);
+                    return Ok(item.GenerateDto());
                 return Unauthorized();
             }
             catch (Exception e)

@@ -60,7 +60,7 @@ namespace DiaryService.Controllers
         [HttpGet("{id}")]
 		public IActionResult Get([FromRoute] Guid id)
 		{
-            return base.Get<FoodItem>(db, id);
+            return base.Get<FoodItem, FoodItemDto>(db, id);
         }
 
         /**

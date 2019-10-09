@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace Lib.Models
 {
-    public interface IManyToMany<T>
+    public interface IManyToMany
     {
-        ISet<T> ManyToMany { get; set; }
+        void SetIdFirst(Guid id);
+        void SetIdSecond(Guid id);
     }
 }
