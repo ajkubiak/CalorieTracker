@@ -10,7 +10,6 @@ using Serilog;
 
 namespace DiaryService.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FoodItemController : BaseController
@@ -58,7 +57,7 @@ namespace DiaryService.Controllers
          * <summary>Retrieves <see cref="FoodItem"/> objects</summary>
          */
         [HttpGet("{id}")]
-		public IActionResult Get([FromRoute] Guid id)
+		public IActionResult Get(Guid id)
 		{
             return base.Get<FoodItem, FoodItemDto>(db, id);
         }

@@ -16,7 +16,6 @@ namespace DiaryService.Controllers
      *  Controls meals.
      * </summary>
      */
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class MealController : BaseController

@@ -11,7 +11,6 @@ using Serilog;
 
 namespace AuthService.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : BaseController

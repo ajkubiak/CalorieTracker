@@ -24,7 +24,7 @@ namespace DiaryService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddControllers();
             services.AddHttpContextAccessor();
 
             #region Singletons
@@ -46,11 +46,6 @@ namespace DiaryService
             services.AddAuthorization(AuthUtils.AddAuthorization());
             #endregion
         }
-
-        //public void ConfigureDesignTimeServices(IServiceCollection services)
-        //{
-        //    services.AddSingleton<ISettingsUtils, SettingsUtils>();
-        //}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsUtils settingsUtils)
@@ -78,9 +73,17 @@ namespace DiaryService
             }
             settingsUtils.Initialize(myEnv);
 
+            app.UseRouting();
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => {
+                // Require authorization globally
+                endpoints.MapDefaultControllerRoute().RequireAuthorization();
+                endpoints.MapControllers();
+            });
         }
     }
 
